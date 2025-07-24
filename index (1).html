@@ -1,0 +1,136 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windfitness - Thống Trị Cơ Thể & Tâm Trí</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white font-bold">
+  <!-- Navigation -->
+  <nav class="bg-gray-900 p-4 fixed w-full z-10">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="https://via.placeholder.com/40" alt="Windfitness Logo" class="mr-2">
+        <h1 class="text-xl">Windfitness</h1>
+      </div>
+      <ul class="flex space-x-6">
+        <li><a href="#home" class="hover:text-red-600">TRANG CHỦ</a></li>
+        <li><a href="#training" class="hover:text-red-600">TẬP LUYỆN</a></li>
+        <li><a href="#nutrition" class="hover:text-red-600">DINH DƯỠNG</a></li>
+        <li><a href="#recovery" class="hover:text-red-600">PHỤC HỒI</a></li>
+        <li><a href="#mindset" class="hover:text-red-600">TƯ DUY</a></li>
+        <li><a href="#shop" class="hover:text-red-600 bg-red-600 px-3 py-1 rounded">SHOP</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section (Trang Chủ) -->
+  <section id="home" class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438')">
+    <div class="text-center" data-aos="fade-up" data-aos-duration="1000">
+      <h2 class="text-5xl uppercase mb-4">THỐNG TRỊ TRÒ CHƠI</h2>
+      <p class="text-xl mb-6">Tôi là Windfitness - Người Đánh Thức Sức Mạnh. Từ con số 0, tôi xây dựng cơ thể thép và tâm trí bất bại.</p>
+      <p class="text-lg mb-6">Tôi dạy những kẻ xứng đáng cách chinh phục bản thân và vươn tới đỉnh cao.</p>
+      <a href="#training" class="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700">HỌC TỪ ĐỈNH CAO</a>
+    </div>
+  </section>
+
+  <!-- Tập Luyện -->
+  <section id="training" class="py-20 bg-gray-900">
+    <div class="container mx-auto text-center">
+      <h2 class="text-4xl uppercase mb-8" data-aos="fade-up" data-aos-duration="1000">TẬP LUYỆN - XÂY DỰNG ĐẾ CHẾ</h2>
+      <p class="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">Deadlift, Squat, Bench Press - những bài tập biến bạn thành chiến binh. Tập 5 ngày/tuần, không có chỗ cho yếu đuối!</p>
+      <p class="text-lg" data-aos="fade-up" data-aos-delay="400">Cardio đốt mỡ, tăng sức bền. Kỷ luật là chìa khóa - không tập là tự hủy hoại!</p>
+      <img src="https://via.placeholder.com/300" alt="Training Image" class="mx-auto mt-6" data-aos="zoom-in" data-aos-duration="1000">
+    </div>
+  </section>
+
+  <!-- Dinh Dưỡng -->
+  <section id="nutrition" class="py-20">
+    <div class="container mx-auto text-center">
+      <h2 class="text-4xl uppercase mb-8" data-aos="fade-up" data-aos-duration="1000">DINH DƯỠNG - NHIÊN LIỆU THẮNG THẾ</h2>
+      <p class="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">Thịt, cá, trứng - protein tối thượng. Gạo, khoai - carb chiến đấu. Dầu ô liu, quả bơ - chất béo của kẻ mạnh.</p>
+      <p class="text-lg" data-aos="fade-up" data-aos-delay="400">Ăn 6 bữa/ngày, nạp protein sau tập. Đừng để dạ dày yếu đuối phá hủy giấc mơ!</p>
+      <img src="https://via.placeholder.com/300" alt="Nutrition Image" class="mx-auto mt-6" data-aos="zoom-in" data-aos-duration="1000">
+    </div>
+  </section>
+
+  <!-- Nghỉ Ngơi & Phục Hồi -->
+  <section id="recovery" class="py-20 bg-gray-900">
+    <div class="container mx-auto text-center">
+      <h2 class="text-4xl uppercase mb-8" data-aos="fade-up" data-aos-duration="1000">PHỤC HỒI - TÁI TẠO SỰ BẤT BẠI</h2>
+      <p class="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">Ngủ 8 tiếng, không thương lượng. Thiền để làm chủ tâm trí. Nghỉ ngơi là vũ khí, không phải sự lười biếng.</p>
+      <p class="text-lg" data-aos="fade-up" data-aos-delay="400">Nghe cơ thể, tránh chấn thương. Kẻ yếu bỏ cuộc, người mạnh phục hồi!</p>
+      <img src="https://via.placeholder.com/300" alt="Recovery Image" class="mx-auto mt-6" data-aos="zoom-in" data-aos-duration="1000">
+    </div>
+  </section>
+
+  <!-- Tư Duy Mindset -->
+  <section id="mindset" class="py-20">
+    <div class="container mx-auto text-center">
+      <h2 class="text-4xl uppercase mb-8" data-aos="fade-up" data-aos-duration="1000">TƯ DUY - THÉP TÔI LUYỆN</h2>
+      <p class="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">Kỷ luật đánh bại tất cả. Đặt mục tiêu, hình dung chiến thắng, và nghiền nát sự nghi ngờ.</p>
+      <p class="text-lg" data-aos="fade-up" data-aos-delay="400">Windfitness không dành cho kẻ yếu. Thức dậy và chinh phục mỗi ngày!</p>
+      <img src="https://via.placeholder.com/300" alt="Mindset Image" class="mx-auto mt-6" data-aos="zoom-in" data-aos-duration="1000">
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 p-4 text-center">
+    <p>© 2025 Windfitness. Quyền lực thuộc về kẻ mạnh.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init();
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
